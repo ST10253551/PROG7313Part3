@@ -1,65 +1,68 @@
 package vcmsa.projects.djmc_poe
 
-import android.os.Bundle
 import android.content.Intent
-import android.widget.Toast
+import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // Link to your layout file
+        setContentView(R.layout.activity_main)
 
         FirebaseApp.initializeApp(this)
+        auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Grab references to UI components
-        val usernameEditText = findViewById<EditText>(R.id.etUsername)
+        val emailEditText = findViewById<EditText>(R.id.etEmail)
         val passwordEditText = findViewById<EditText>(R.id.etPassword)
-        val loginButton = findViewById<Button>(R.id.btnLogin)
         val signupButton = findViewById<Button>(R.id.signupBtn)
+        val loginButton = findViewById<Button>(R.id.btnLogin)
 
-        loginButton.setOnClickListener {
-            val username = usernameEditText.text.toString().trim()
+        signupButton.setOnClickListener {
+            val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            if (username.isEmpty() || password.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in both fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val user = hashMapOf(
-                "username" to username,
-                "password" to password
-            )
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val uid = auth.currentUser?.uid
+                        // Save extra user data to Firestore
+                        val userData = hashMapOf("email" to email)
 
-            db.collection("users")
-                .add(user)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("FIRESTORE", "User added with ID: ${documentReference.id}")
-                    Toast.makeText(this, "User saved!", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIRESTORE", "Error adding user", e)
-                    Toast.makeText(this, "Error saving user", Toast.LENGTH_SHORT).show()
+                        uid?.let {
+                            db.collection("users").document(it).set(userData)
+                        }
+
+                        Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
         }
 
-        signupButton.setOnClickListener {
-
+        loginButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
-
         }
-
     }
 }

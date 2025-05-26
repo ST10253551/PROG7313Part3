@@ -38,11 +38,11 @@
 
             <!-- Username Input -->
             <EditText
-                android:id="@+id/etUsername"
+                android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="40dp"
-                android:hint="Username"
+                android:hint="Email"
                 android:padding="8dp"
                 android:textColor="@color/black"  />
 
