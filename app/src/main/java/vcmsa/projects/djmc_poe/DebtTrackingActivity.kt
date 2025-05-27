@@ -16,6 +16,8 @@ class DebtTrackingActivity : AppCompatActivity() {
 
         val categoryButton = findViewById<Button>(R.id.categoriesBtn)
         val detailButton = findViewById<Button>(R.id.detailBtn)
+        val expenseButton = findViewById<Button>(R.id.expenseButton)
+
 
         categoryButton.setOnClickListener {
             val intent = Intent(this, DebtCategoryActivity::class.java)
@@ -29,5 +31,13 @@ class DebtTrackingActivity : AppCompatActivity() {
             finish()
         }
 
+        expenseButton.setOnClickListener {
+            val intent = Intent(this, AddExpense::class.java) // ✅ Navigate to AddExpense
+            startActivity(intent)
+        }
+
+
+
+        }
     }
-}
+
