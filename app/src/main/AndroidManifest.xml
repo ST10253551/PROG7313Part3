@@ -24,6 +24,9 @@
             android:name=".AddExpense"
             android:exported="false" />
         <activity
+            android:name=".PaymentEntryActivity"
+            android:exported="false" />
+        <activity
             android:name=".DebtCategoryActivity"
             android:exported="false"
             android:theme="@style/Theme.DJMC_POE" />

@@ -24,7 +24,8 @@ class DebtDetailsActivity : AppCompatActivity() {
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(this, "Not authenticated. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Not authenticated. Please log in again.", Toast.LENGTH_LONG)
+                .show()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -82,7 +83,8 @@ class DebtDetailsActivity : AppCompatActivity() {
             val interestamt = interestamtText.toDoubleOrNull()
 
             if (debtamt == null || interestamt == null) {
-                Toast.makeText(this, "Debt and interest must be valid numbers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Debt and interest must be valid numbers", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
@@ -94,26 +96,35 @@ class DebtDetailsActivity : AppCompatActivity() {
                 "category" to selectedCategory
             )
 
-            // Save under /users/{userId}/debtdetails/
-            db.collection("users").document(userId).collection("debtdetails")
-                .add(debt)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("FIRESTORE", "Debt successfully saved: ${documentReference.id}")
-                    Toast.makeText(this, "Debt saved!", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIRESTORE", "Error adding debt", e)
-                    Toast.makeText(this, "Error saving debt", Toast.LENGTH_SHORT).show()
-                }
-        }
+            val debtDetailsRef = db.collection("users").document(userId).collection("debtdetails")
 
-        backButton.setOnClickListener {
-            startActivity(Intent(this, DebtTrackingActivity::class.java))
-            finish()
+            debtDetailsRef.add(debt)
+                .addOnSuccessListener { documentReference ->
+                    val docId = documentReference.id
+
+                    // Add document ID to the document itself
+                    documentReference.update("documentId", docId)
+
+                    // Save under /users/{userId}/debtdetails/
+                    db.collection("users").document(userId).collection("debtdetails")
+                        .add(debt)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d("FIRESTORE", "Debt successfully saved: ${documentReference.id}")
+                            Toast.makeText(this, "Debt saved!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FIRESTORE", "Error adding debt", e)
+                            Toast.makeText(this, "Error saving debt", Toast.LENGTH_SHORT).show()
+                        }
+                }
+
+            backButton.setOnClickListener {
+                startActivity(Intent(this, DebtTrackingActivity::class.java))
+                finish()
+            }
         }
     }
 }
-
 
 //package vcmsa.projects.djmc_poe
 //
