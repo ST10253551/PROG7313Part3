@@ -62,7 +62,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics") // Firestore SDK
     implementation ("com.google.firebase:firebase-auth")
-
-
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     }
 

@@ -4,8 +4,14 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
 }
 
-buildscript {
-    dependencies {
-        classpath ("com.google.gms:google-services:4.4.1") // or latest
+    buildscript {
+
+        repositories {
+            google()
+            mavenCentral()
+            maven { url = uri("https://jitpack.io") } // Kotlin DSL
+        }
+        dependencies {
+            classpath("com.google.gms:google-services:4.4.1") // or latest
+        }
     }
-}
